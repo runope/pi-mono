@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
-# pi-test - Test launcher for pi (Bun runtime)
-# Usage: ./pi-test.sh [options] [prompt]
-#   ./pi-test.sh              - Start interactive mode
-#   ./pi-test.sh "fix bug"    - Start with prompt
-#   ./pi-test.sh --no-env     - Start without API keys (for testing)
+# pi - Development launcher script for Bun runtime
+# Usage: ./pi.sh [options] [prompt]
+#   ./pi.sh              - Start interactive mode
+#   ./pi.sh "fix bug"    - Start with prompt
+#   ./pi.sh --no-env     - Start without API keys
+#   ./pi.sh --version    - Show version
 
 set -euo pipefail
 

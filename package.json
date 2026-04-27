@@ -11,6 +11,9 @@
 		"packages/coding-agent/examples/extensions/custom-provider-qwen-cli"
 	],
 	"scripts": {
+		"pi": "bun packages/coding-agent/src/cli.ts",
+		"pi:watch": "bun --watch packages/coding-agent/src/cli.ts",
+		"pi:no-env": "bun packages/coding-agent/src/cli.ts --no-env",
 		"clean": "bun run clean --filter '*'",
 		"build": "bun run build:ai && bun run build:agent && bun run build:tui && bun run build:coding-agent && bun run build:mom && bun run build:web-ui && bun run build:pods",
 		"build:ai": "cd packages/ai && bun run build",
