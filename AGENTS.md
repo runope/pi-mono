@@ -19,10 +19,10 @@
 
 ## Commands
 
-- After code changes (not documentation changes): `npm run check` (get full output, no tail). Fix all errors, warnings, and infos before committing.
-- Note: `npm run check` does not run tests.
-- NEVER run: `npm run dev`, `npm run build`, `npm test`
-- Only run specific tests if user instructs: `npx tsx ../../node_modules/vitest/dist/cli.js --run test/specific.test.ts`
+- After code changes (not documentation changes): `bun run check` (get full output, no tail). Fix all errors, warnings, and infos before committing.
+- Note: `bun run check` does not run tests.
+- NEVER run: `bun run dev`, `bun run build`, `bun test`
+- Only run specific tests if user instructs: `bun test test/specific.test.ts`
 - Run tests from the package root, not the repo root.
 - If you create or modify a test file, you MUST run that test file and iterate until it passes.
 - When writing tests, run them, identify issues in either the test or implementation, and iterate until fixed.
@@ -141,7 +141,7 @@ Create provider file exporting:
 
 ### 3. Provider Exports and Lazy Registration
 
-- Add a package subpath export in `packages/ai/package.json` pointing at `./dist/providers/<provider>.js`
+- Add a package subpath export in `packages/ai/package.json` pointing at `./src/providers/<provider>.ts`
 - Add `export type` re-exports in `packages/ai/src/index.ts` for provider option types that should remain available from the root entry
 - Register the provider in `packages/ai/src/providers/register-builtins.ts` via lazy loader wrappers, do not statically import provider implementation modules there
 - Add credential detection in `packages/ai/src/env-api-keys.ts`
@@ -186,11 +186,132 @@ Create provider file exporting:
 
 2. **Run release script**:
    ```bash
-   npm run release:patch    # Fixes and additions
-   npm run release:minor    # API breaking changes
+   bun run release:patch    # Fixes and additions
+   bun run release:minor    # API breaking changes
    ```
 
 The script handles: version bump, CHANGELOG finalization, commit, tag, publish, and adding new `[Unreleased]` sections.
+
+## Bun Development
+
+This project uses **Bun** as the package manager and runtime.
+
+### Prerequisites
+
+- **Bun >= 1.3.0** - Install from https://bun.sh
+
+### Key Differences from npm
+
+| Aspect | npm | Bun |
+|--------|-----|-----|
+| Package manager | npm | bun |
+| Run scripts | `npm run <script>` | `bun run <script>` or `bun <script>` |
+| Install deps | `npm install` | `bun install` |
+| Add package | `npm install <pkg>` | `bun add <pkg>` |
+| Dev dependency | `npm install -D <pkg>` | `bun add -d <pkg>` |
+| Execute package | `npx <pkg>` | `bunx <pkg>` |
+
+### Source-First Development
+
+All packages use **src/index.ts** as the entry point (not dist/). Bun runs TypeScript directly without a build step.
+
+- Package entry: `src/index.ts` (not `dist/index.js`)
+- Subpath exports: `./src/feature.ts` (not `./dist/feature.js`)
+- Type declarations: Generated automatically by Bun
+
+### Configuration
+
+- `bunfig.toml` - Bun configuration (install settings, test runner)
+- `tsconfig.json` - TypeScript paths map `@runope/pi-*` to source files
+
+## Fork and Secondary Development Workflow
+
+For contributors who want to maintain their own fork for secondary development:
+
+### Initial Setup
+
+```bash
+# 1. Fork the official repo and clone
+gh repo fork badlogic/pi-mono --clone
+
+# 2. Add upstream remote for syncing
+cd pi-mono
+git remote add upstream https://github.com/badlogic/pi-mono.git
+```
+
+**Remote structure**:
+- `origin` → `<your-username>/pi-mono` (your fork)
+- `upstream` → `badlogic/pi-mono` (official repo)
+
+### Feature Development
+
+```bash
+# Create feature branch
+git checkout -b feature/my-feature
+
+# Or use worktree for parallel development
+git worktree add ../pi-mono-feature feature/my-feature
+```
+
+**Worktree benefits**:
+- Work on multiple branches simultaneously without switching
+- Each directory has independent `node_modules`
+- Context switching via `cd`, no waiting for git operations
+
+```bash
+# List all worktrees
+git worktree list
+
+# Remove a worktree
+git worktree remove ../pi-mono-feature
+```
+
+### Syncing with Upstream
+
+```bash
+# Fetch latest from official repo
+git fetch upstream
+
+# Rebase your branch on top of upstream/main
+git rebase upstream/main
+
+# Push to your fork
+git push origin feature/my-feature
+```
+
+**Rebase vs Merge**:
+- `rebase` - Linear history, cleaner
+- `merge` - Preserves branch history, creates merge commit
+
+### Complete Workflow Example
+
+```bash
+# Initial setup (one-time)
+gh repo fork badlogic/pi-mono --clone
+cd pi-mono
+git remote add upstream https://github.com/badlogic/pi-mono.git
+
+# Develop feature A
+git worktree add ../pi-mono-feature-a feature/a
+cd ../pi-mono-feature-a
+bun install
+# ... develop ...
+git add <specific-files>
+git commit -m "feat: add feature a"
+git push origin feature/a
+
+# Develop feature B in parallel (non-conflicting)
+git worktree add ../pi-mono-feature-b feature/b
+cd ../pi-mono-feature-b
+# ... develop ...
+
+# Sync with upstream periodically
+git fetch upstream
+git rebase upstream/main
+
+# Cleanup when done
+git worktree remove ../pi-mono-feature-a
+```
 
 ## **CRITICAL** Git Rules for Parallel Agents **CRITICAL**
 

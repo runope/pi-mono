@@ -1,6 +1,6 @@
 import { createInterface } from "node:readline";
-import type { AgentTool } from "@mariozechner/pi-agent-core";
-import { Text } from "@mariozechner/pi-tui";
+import type { AgentTool } from "@runope/pi-agent-core";
+import { Text } from "@runope/pi-tui";
 import { spawn } from "child_process";
 import { existsSync } from "fs";
 import path from "path";
