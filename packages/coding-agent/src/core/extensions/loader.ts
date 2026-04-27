@@ -21,7 +21,7 @@ import * as _bundledPiTui from "@runope/pi-tui";
 import * as _bundledTypebox from "typebox";
 import * as _bundledTypeboxCompile from "typebox/compile";
 import * as _bundledTypeboxValue from "typebox/value";
-import { CONFIG_DIR_NAME, getAgentDir, isBunBinary } from "../../config.js";
+import { CONFIG_DIR_NAME, getAgentDir, isBunBinary, isBunRuntime } from "../../config.js";
 // NOTE: This import works because loader.ts exports are NOT re-exported from index.ts,
 // avoiding a circular dependency. Extensions can import from @runope/pi-coding-agent.
 import * as _bundledPiCodingAgent from "../../index.js";
@@ -85,10 +85,10 @@ function getAliases(): Record<string, string> {
 
 	_aliases = {
 		"@runope/pi-coding-agent": packageIndex,
-		"@runope/pi-agent-core": resolveWorkspaceOrImport("agent/dist/index.js", "@runope/pi-agent-core"),
-		"@runope/pi-tui": resolveWorkspaceOrImport("tui/dist/index.js", "@runope/pi-tui"),
-		"@runope/pi-ai": resolveWorkspaceOrImport("ai/dist/index.js", "@runope/pi-ai"),
-		"@runope/pi-ai/oauth": resolveWorkspaceOrImport("ai/dist/oauth.js", "@runope/pi-ai/oauth"),
+		"@runope/pi-agent-core": resolveWorkspaceOrImport("agent/src/index.ts", "@runope/pi-agent-core"),
+		"@runope/pi-tui": resolveWorkspaceOrImport("tui/src/index.ts", "@runope/pi-tui"),
+		"@runope/pi-ai": resolveWorkspaceOrImport("ai/src/index.ts", "@runope/pi-ai"),
+		"@runope/pi-ai/oauth": resolveWorkspaceOrImport("ai/src/oauth.ts", "@runope/pi-ai/oauth"),
 		typebox: typeboxEntry,
 		"typebox/compile": typeboxCompileEntry,
 		"typebox/value": typeboxValueEntry,
@@ -339,12 +339,15 @@ function createExtensionAPI(
 }
 
 async function loadExtensionModule(extensionPath: string) {
+	// In Bun runtime (binary or dev): use virtualModules for bundled packages
+	// This works because Bun can resolve modules that Node.js cannot (due to .bun structure)
+	// Also disable tryNative so jiti handles ALL imports (not just the entry point)
+	// In Node.js: use aliases to resolve to node_modules paths
+	const useVirtualModules = isBunBinary || isBunRuntime;
+
 	const jiti = createJiti(import.meta.url, {
 		moduleCache: false,
-		// In Bun binary: use virtualModules for bundled packages (no filesystem resolution)
-		// Also disable tryNative so jiti handles ALL imports (not just the entry point)
-		// In Node.js/dev: use aliases to resolve to node_modules paths
-		...(isBunBinary ? { virtualModules: VIRTUAL_MODULES, tryNative: false } : { alias: getAliases() }),
+		...(useVirtualModules ? { virtualModules: VIRTUAL_MODULES, tryNative: false } : { alias: getAliases() }),
 	});
 
 	const module = await jiti.import(extensionPath, { default: true });
