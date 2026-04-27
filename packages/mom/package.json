@@ -4,19 +4,20 @@
 	"description": "Slack bot that delegates messages to the pi coding agent",
 	"type": "module",
 	"bin": {
-		"mom": "dist/main.js"
+		"mom": "src/main.ts"
 	},
-	"main": "./dist/index.js",
-	"types": "./dist/index.d.ts",
+	"main": "./src/index.ts",
+	"types": "./src/index.ts",
 	"files": [
-		"dist",
+		"src",
 		"CHANGELOG.md"
 	],
 	"scripts": {
-		"clean": "shx rm -rf dist",
-		"build": "tsgo -p tsconfig.build.json && shx chmod +x dist/main.js",
-		"dev": "tsgo -p tsconfig.build.json --watch --preserveWatchOutput",
-		"prepublishOnly": "npm run clean && npm run build"
+		"clean": "bun shx rm -rf dist",
+		"build": "bun build ./src/index.ts --outdir ./dist && bun shx chmod +x dist/main.js",
+		"dev": "bun build ./src/index.ts --outdir ./dist --watch",
+		"test": "bun test",
+		"prepublishOnly": "bun run clean && bun run build"
 	},
 	"dependencies": {
 		"@anthropic-ai/sandbox-runtime": "^0.0.16",
@@ -33,7 +34,8 @@
 	"devDependencies": {
 		"@types/diff": "^7.0.2",
 		"@types/node": "^24.3.0",
-		"typescript": "^5.7.3"
+		"typescript": "^5.7.3",
+		"vitest": "^3.2.4"
 	},
 	"keywords": [
 		"slack",
