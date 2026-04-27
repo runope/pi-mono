@@ -23,8 +23,8 @@ describe("detectInstallMethod", () => {
 		);
 
 		expect(detectInstallMethod()).toBe("pnpm");
-		expect(getUpdateInstruction("@mariozechner/pi-coding-agent")).toBe(
-			"Run: pnpm install -g @mariozechner/pi-coding-agent",
+		expect(getUpdateInstruction("@runope/pi-coding-agent")).toBe(
+			"Run: pnpm install -g @runope/pi-coding-agent",
 		);
 	});
 
@@ -32,9 +32,9 @@ describe("detectInstallMethod", () => {
 		setExecPath("/usr/local/bin/node");
 
 		expect(detectInstallMethod()).toBe("unknown");
-		expect(getSelfUpdateCommand("@mariozechner/pi-coding-agent")).toBeUndefined();
-		expect(getUpdateInstruction("@mariozechner/pi-coding-agent")).toBe(
-			"Update @mariozechner/pi-coding-agent using the package manager, wrapper, or source checkout that provides this installation.",
+		expect(getSelfUpdateCommand("@runope/pi-coding-agent")).toBeUndefined();
+		expect(getUpdateInstruction("@runope/pi-coding-agent")).toBe(
+			"Update @runope/pi-coding-agent using the package manager, wrapper, or source checkout that provides this installation.",
 		);
 	});
 });
