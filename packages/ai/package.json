@@ -3,73 +3,72 @@
 	"version": "0.70.2",
 	"description": "Unified LLM API with automatic model discovery and provider configuration",
 	"type": "module",
-	"main": "./dist/index.js",
-	"types": "./dist/index.d.ts",
+	"main": "./src/index.ts",
+	"types": "./src/index.ts",
 	"exports": {
 		".": {
-			"types": "./dist/index.d.ts",
-			"import": "./dist/index.js"
+			"types": "./src/index.ts",
+			"import": "./src/index.ts"
 		},
 		"./anthropic": {
-			"types": "./dist/providers/anthropic.d.ts",
-			"import": "./dist/providers/anthropic.js"
+			"types": "./src/providers/anthropic.ts",
+			"import": "./src/providers/anthropic.ts"
 		},
 		"./azure-openai-responses": {
-			"types": "./dist/providers/azure-openai-responses.d.ts",
-			"import": "./dist/providers/azure-openai-responses.js"
+			"types": "./src/providers/azure-openai-responses.ts",
+			"import": "./src/providers/azure-openai-responses.ts"
 		},
 		"./google": {
-			"types": "./dist/providers/google.d.ts",
-			"import": "./dist/providers/google.js"
+			"types": "./src/providers/google.ts",
+			"import": "./src/providers/google.ts"
 		},
 		"./google-gemini-cli": {
-			"types": "./dist/providers/google-gemini-cli.d.ts",
-			"import": "./dist/providers/google-gemini-cli.js"
+			"types": "./src/providers/google-gemini-cli.ts",
+			"import": "./src/providers/google-gemini-cli.ts"
 		},
 		"./google-vertex": {
-			"types": "./dist/providers/google-vertex.d.ts",
-			"import": "./dist/providers/google-vertex.js"
+			"types": "./src/providers/google-vertex.ts",
+			"import": "./src/providers/google-vertex.ts"
 		},
 		"./mistral": {
-			"types": "./dist/providers/mistral.d.ts",
-			"import": "./dist/providers/mistral.js"
+			"types": "./src/providers/mistral.ts",
+			"import": "./src/providers/mistral.ts"
 		},
 		"./openai-codex-responses": {
-			"types": "./dist/providers/openai-codex-responses.d.ts",
-			"import": "./dist/providers/openai-codex-responses.js"
+			"types": "./src/providers/openai-codex-responses.ts",
+			"import": "./src/providers/openai-codex-responses.ts"
 		},
 		"./openai-completions": {
-			"types": "./dist/providers/openai-completions.d.ts",
-			"import": "./dist/providers/openai-completions.js"
+			"types": "./src/providers/openai-completions.ts",
+			"import": "./src/providers/openai-completions.ts"
 		},
 		"./openai-responses": {
-			"types": "./dist/providers/openai-responses.d.ts",
-			"import": "./dist/providers/openai-responses.js"
+			"types": "./src/providers/openai-responses.ts",
+			"import": "./src/providers/openai-responses.ts"
 		},
 		"./oauth": {
-			"types": "./dist/oauth.d.ts",
-			"import": "./dist/oauth.js"
+			"types": "./src/oauth.ts",
+			"import": "./src/oauth.ts"
 		},
 		"./bedrock-provider": {
-			"types": "./dist/bedrock-provider.d.ts",
-			"import": "./dist/bedrock-provider.js"
+			"types": "./src/bedrock-provider.ts",
+			"import": "./src/bedrock-provider.ts"
 		}
 	},
 	"bin": {
-		"pi-ai": "./dist/cli.js"
+		"pi-ai": "./src/cli.ts"
 	},
 	"files": [
-		"dist",
+		"src",
 		"README.md"
 	],
 	"scripts": {
-		"clean": "shx rm -rf dist",
-		"generate-models": "npx tsx scripts/generate-models.ts",
-		"build": "npm run generate-models && tsgo -p tsconfig.build.json",
-		"dev": "tsgo -p tsconfig.build.json --watch --preserveWatchOutput",
-		"dev:tsc": "tsgo -p tsconfig.build.json --watch --preserveWatchOutput",
-		"test": "vitest --run",
-		"prepublishOnly": "npm run clean && npm run build"
+		"clean": "bun shx rm -rf dist",
+		"generate-models": "bun x tsx scripts/generate-models.ts",
+		"build": "bun run generate-models && bun build ./src/index.ts --outdir ./dist",
+		"dev": "bun build ./src/index.ts --outdir ./dist --watch",
+		"test": "bun test",
+		"prepublishOnly": "bun run clean && bun run build"
 	},
 	"dependencies": {
 		"@anthropic-ai/sdk": "^0.90.0",
@@ -105,6 +104,8 @@
 		"node": ">=20.0.0"
 	},
 	"devDependencies": {
+		"@smithy/types": "^4.14.1",
+		"@smithy/node-http-handler": "^4.6.1",
 		"@types/node": "^24.3.0",
 		"canvas": "^3.2.0",
 		"vitest": "^3.2.4"
